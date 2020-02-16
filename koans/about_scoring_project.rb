@@ -30,7 +30,40 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # Your goal is to write the score method.
 
 def score(dice)
-  # You need to write this method
+  # Handle the triple, if it exists, then handle the rest of them.
+  # This could definitely be more ruby-ish.
+  total = 0
+  groups = dice.sort.group_by { |t| t }
+  triple = groups.select { |k,v| v.count >= 3 }
+  
+  if not triple.empty?
+    triple_val = triple.keys[0]
+    if triple_val == 1
+      total += 1000
+    else
+      total += ( triple_val * 100 )
+    end
+    groups[triple_val] = groups[triple_val][3..-1]
+  end
+
+  groups.each do |k,v|
+    v.each do |d|
+      total += score_single(d)
+    end
+  end
+
+  return total
+
+end
+
+def score_single(die)
+  if die == 1
+    return 100
+  elsif die == 5
+    return 50
+  else
+    return 0
+  end
 end
 
 class AboutScoringProject < Neo::Koan
